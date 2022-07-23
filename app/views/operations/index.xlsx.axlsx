@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+wb = xlsx_package.workbook
+wb.add_worksheet(name: 'Operations') do |sheet|
+  green_background = wb.styles.add_style(bg_color: '006633', fg_color: 'FFFFFF')
+  sheet.add_row ['Operations:'], style: green_background
+  sheet.add_row %w[ID Category Amount Currency Date]
+  @operations.each do |operation|
+    sheet.add_row [operation.id, operation.category.name, operation.amount, operation.currency, operation.date]
+  end
+  sheet.add_row
+  sheet.add_row ['Totals:'], style: green_background
+  sheet.add_row %w[Amount Currency Direction]
+  @totals_operations.each do |total_operation|
+    sheet.add_row [total_operation[0], total_operation[1], total_operation[2]]
+  end
+end

@@ -10,6 +10,11 @@ class OperationsController < ApplicationController
                          .order(direction: :asc)
                          .group(:currency, :direction)
                          .pluck('sum(amount)', 'currency', 'direction')
+    @params = index_params
+    respond_to do |format|
+      format.xlsx
+      format.html
+    end
   end
 
   def show
@@ -58,6 +63,6 @@ class OperationsController < ApplicationController
   end
 
   def index_params
-    params.permit(:currency, :direction, :category_id)
+    params.permit(:currency, :direction, :category, :date_start, :date_finish)
   end
 end
