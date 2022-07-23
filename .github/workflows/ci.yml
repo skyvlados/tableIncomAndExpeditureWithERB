@@ -1,0 +1,42 @@
+name: Ruby CI
+on: [push, pull_request]
+jobs:
+  linter:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.2'
+      - name: Install dependencies
+        run: bundle install
+      - name: Run linter
+        run: rubocop
+    
+  test:
+    runs-on: macos-latest
+
+    env:
+      global:
+       PGPORT=5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.2'
+      - name: Install dependencies
+        run: bundle install
+      - name: Setup test database
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        run: |
+          bundle exec rails db:reset db:setup db:migrate RAILS_ENV=test
+      - name: Run tests
+        run: rails test test/units
